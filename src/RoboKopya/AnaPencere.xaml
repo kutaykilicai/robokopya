@@ -1,0 +1,113 @@
+<Window x:Class="RoboKopya.AnaPencere"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hesaplanıyor..." Width="480" SizeToContent="Height" ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen" UseLayoutRounding="True"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13"
+        Background="{DynamicResource Zemin}" Foreground="{DynamicResource Metin}">
+    <Window.Resources>
+        <Style x:Key="Dugme" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Metin}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="B" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="B" Property="Background" Value="{DynamicResource Ustunde}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="B" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="Simge" TargetType="Button" BasedOn="{StaticResource Dugme}">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style x:Key="Etiket" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource Ikincil}"/>
+            <Setter Property="Margin" Value="0,2,14,2"/>
+        </Style>
+        <Style x:Key="Deger" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,2,0,2"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="Kok" Margin="20,14,20,12">
+        <StackPanel>
+            <TextBlock x:Name="IslemSatiri" TextWrapping="Wrap" Foreground="{DynamicResource Ikincil}">
+                <Run x:Name="IslemBasi" Text="Öğeler sayılıyor: "/><Run x:Name="KaynakAdi" Foreground="{DynamicResource Vurgu}"/><Run x:Name="Ok" Text=" → "/><Run x:Name="HedefAdi" Foreground="{DynamicResource Vurgu}"/>
+            </TextBlock>
+
+            <Grid Margin="0,8,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="YuzdeMetni" Text="Hesaplanıyor..." VerticalAlignment="Center"
+                           FontFamily="Segoe UI Variable Display, Segoe UI" FontSize="20" FontWeight="SemiBold"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button x:Name="DuraklatDugmesi" Style="{StaticResource Simge}" Content="&#xE769;" ToolTip="Duraklat" Click="Duraklat_Click"/>
+                    <Button x:Name="IptalDugmesi" Style="{StaticResource Simge}" Content="&#xE711;" ToolTip="İptal" Margin="4,0,0,0" Click="Iptal_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel x:Name="AyrintiPaneli">
+                <Border x:Name="GrafikKutusu" Height="84" CornerRadius="8" BorderThickness="1"
+                        BorderBrush="{DynamicResource Cizgi}" Background="{DynamicResource Kart}">
+                    <Canvas x:Name="Grafik" SizeChanged="Grafik_SizeChanged">
+                        <Rectangle x:Name="IlerlemeDolgusu" Fill="{DynamicResource Dolgu}" Height="84" Width="0"/>
+                        <Polygon x:Name="HizEgrisi" Fill="{DynamicResource Egri}"/>
+                        <Line x:Name="HizCizgisi" Stroke="{DynamicResource Metin}" StrokeThickness="1" Opacity="0.75"/>
+                        <TextBlock x:Name="HizEtiketi" FontSize="12"/>
+                    </Canvas>
+                </Border>
+
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/><RowDefinition/><RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Style="{StaticResource Etiket}" Text="Ad:"/>
+                    <TextBlock Style="{StaticResource Etiket}" Grid.Row="1" Text="Kalan süre:"/>
+                    <TextBlock Style="{StaticResource Etiket}" Grid.Row="2" Text="Kalan öğeler:"/>
+                    <TextBlock x:Name="AdMetni" Style="{StaticResource Deger}" Grid.Column="1"/>
+                    <TextBlock x:Name="KalanSureMetni" Style="{StaticResource Deger}" Grid.Column="1" Grid.Row="1" Text="Hesaplanıyor..."/>
+                    <TextBlock x:Name="KalanOgeMetni" Style="{StaticResource Deger}" Grid.Column="1" Grid.Row="2" Text="Hesaplanıyor..."/>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel x:Name="HataPaneli" Visibility="Collapsed" Margin="0,12,0,0">
+                <TextBlock x:Name="HataBasligi" FontWeight="SemiBold" Foreground="#FFFF453A" TextWrapping="Wrap"/>
+                <TextBox x:Name="HataMetni" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="150" Margin="0,6,0,0"
+                         VerticalScrollBarVisibility="Auto" BorderThickness="1" BorderBrush="{DynamicResource Cizgi}"
+                         Background="{DynamicResource Kart}" Foreground="{DynamicResource Metin}" Padding="6"/>
+                <Button Content="Kapat" Style="{StaticResource Dugme}" HorizontalAlignment="Right" Padding="16,5"
+                        Margin="0,8,0,0" Background="{DynamicResource Vurgu}" Foreground="White" Click="Kapat_Click"/>
+            </StackPanel>
+
+            <Button x:Name="AyrintiDugmesi" Style="{StaticResource Dugme}" HorizontalAlignment="Left" Padding="6,4"
+                    Margin="-6,10,0,0" Click="Ayrinti_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="AyrintiOku" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="10"
+                               Text="&#xE70E;" VerticalAlignment="Center" Margin="0,1,8,0"/>
+                    <TextBlock x:Name="AyrintiMetni" Text="Daha az ayrıntı"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

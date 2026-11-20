@@ -1,0 +1,7 @@
+bin/
+obj/
+out/
+*.user
+.vs/
+secim.txt
+secim.lock
